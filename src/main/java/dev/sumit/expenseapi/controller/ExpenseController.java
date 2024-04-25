@@ -3,6 +3,8 @@ package dev.sumit.expenseapi.controller;
 
 import dev.sumit.expenseapi.model.Expense;
 import dev.sumit.expenseapi.repository.ExpenseRepository;
+
+import dev.sumit.expenseapi.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
@@ -15,8 +17,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
+@CrossOrigin
 public class ExpenseController {
 
     private static final Logger log = LoggerFactory.getLogger(ExpenseController.class);
@@ -24,18 +28,24 @@ public class ExpenseController {
     public ExpenseRepository expenseRepository;
 
     @Autowired
-    MongoOperations mongoOperations;
+    public UserRepository userRepository;
 
-//    @GetMapping("/")
-//    public ResponseEntity <List<Expense>> getData(){
-//        return new ResponseEntity<List<Expense>>(expenseRepository.findAll(), HttpStatus.OK);
-//    }
 
-    @GetMapping("/")
-    public List<Expense> heii(){
-        return expenseRepository.findAll();
+
+
+    @CrossOrigin
+    @GetMapping("/expenses")
+    public ResponseEntity <List<Expense>> getExpense(){
+        return  new ResponseEntity<List<Expense>>(expenseRepository.findAll(),HttpStatus.OK);
     }
 
+    @CrossOrigin
+    @GetMapping("/get/{id}")
+    public ResponseEntity<Optional<Expense>> getOncExpense(@PathVariable String id){
+        return new ResponseEntity<>(expenseRepository.findById(id),HttpStatus.OK) ;
+    }
+
+    @CrossOrigin
     @PostMapping("/add")
     public ResponseEntity <Expense> addExpense(@RequestBody Expense expense){
         try{
@@ -47,6 +57,21 @@ public class ExpenseController {
 
     }
 
+//    @CrossOrigin
+//    @PostMapping("/add/{id}")
+//    public ResponseEntity <String> addExpense(@RequestBody Expense expense,@PathVariable String id){
+//        try{
+//              System.out.println(userRepository.findById(id));
+//              return new ResponseEntity<>("hii",HttpStatus.OK);
+////            return new ResponseEntity<>(expenseRepository.save(expense),HttpStatus.CREATED);
+//        }catch(Exception e){
+//            return new ResponseEntity<>(null,HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
+//
+//    }
+
+
+    @CrossOrigin
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteBook(@PathVariable String id){
         try {
@@ -56,5 +81,9 @@ public class ExpenseController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+
+
+
 
 }
