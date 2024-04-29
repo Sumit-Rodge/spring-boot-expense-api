@@ -35,41 +35,80 @@ public class UserExpenseController {
 
     @CrossOrigin
     @PostMapping("/add/userexpense")
-    public UserExpense addUserExpense(@RequestBody UserExpense userExpense){
-        return userExpenseRepository.save(userExpense);
+    public ResponseEntity<UserExpense> addUserExpense(@RequestBody UserExpense userExpense){
+        try {
+            return new ResponseEntity<UserExpense>( userExpenseRepository.save(userExpense),HttpStatus.CREATED);
+        }catch (Exception e){
+            return new ResponseEntity<>(null,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
     }
 
     @CrossOrigin
     @GetMapping("/get/userexpense")
-    public List<UserExpense> getUserExpense(){
-        return userExpenseRepository.findAll();
+
+    public  ResponseEntity<List<UserExpense>> getUserExpense(){
+
+        try {
+            return new ResponseEntity<>(userExpenseRepository.findAll(),HttpStatus.OK);
+        }catch (Exception e){
+            return new ResponseEntity<>(null,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
     }
 
     @CrossOrigin
     @GetMapping("/get/userexpense/{id}")
-    public Optional<UserExpense> getUserExpense(@PathVariable String id){
+    public ResponseEntity<Optional<UserExpense>> getUserExpense(@PathVariable String id){
+        try {
+            return new ResponseEntity<>(userExpenseRepository.findById(id),HttpStatus.OK);
+        }catch (Exception e){
+            return new ResponseEntity<>(null,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
 
-        return userExpenseRepository.findById(id);
     }
 
     @CrossOrigin
     @PostMapping("/addexpense/{id}")
-    public Optional<UserExpense> updateExpense(@PathVariable String id, @RequestBody Expense expense){
-        Query query = new Query(Criteria.where("id").is(id));
-        Update update = new Update();
-        mongoTemplate.updateFirst(query,update.push("expenses",expense),UserExpense.class);
-        return userExpenseRepository.findById(id);
+    public ResponseEntity<Optional<UserExpense>> updateExpense(@PathVariable String id, @RequestBody Expense expense){
+
+        try {
+            Query query = new Query(Criteria.where("id").is(id));
+            Update update = new Update();
+            mongoTemplate.updateFirst(query,update.push("expenses",expense),UserExpense.class);
+            return new ResponseEntity<>(userExpenseRepository.findById(id),HttpStatus.OK);
+        }catch (Exception e){
+            return new ResponseEntity<>(null,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
     }
 
     @CrossOrigin
     @PutMapping("/deleteexpense/{id}/{taskid}")
     public ResponseEntity<String> deleteExpense(@PathVariable String id, @PathVariable String taskid){
 
-        Query query = new Query(Criteria.where("id").is(id));
+        try {
+            Query query = new Query(Criteria.where("id").is(id));
 
-        Update update = new Update().pull("Expenses" , new BasicDBObject("id",taskid));
+            Update update = new Update().pull("Expenses" , new BasicDBObject("id",taskid));
 
-        mongoTemplate.updateFirst(query,update,UserExpense.class);
-       return new ResponseEntity<>(HttpStatus.OK);
+            mongoTemplate.updateFirst(query,update,UserExpense.class);
+            return new ResponseEntity<>(HttpStatus.OK);
+        }catch (Exception e){
+            return new ResponseEntity<>(null,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
+
+//    @PutMapping("/updateexpense/{id}/{taskid}")
+//    public UserExpense updateeexpense(@PathVariable String id,@PathVariable String taskid,@RequestBody Object requestBody){
+//        Query query = new Query(new Criteria().andOperator(
+//                Criteria.where("id").is(id),
+//                Criteria.where("expenses").elemMatch(Criteria.where("id").is(taskid))
+//        ));
+//
+//        Update update = new Update().set("expenses.$.id.amount", requestBody.amount);
+//
+//        mongoTemplate.updateMulti(query, update, "comment");
+////        https://stackoverflow.com/questions/16066393/how-to-update-nested-objects-in-array-that-match-the-condition-in-spring-data
+//    }
 }
