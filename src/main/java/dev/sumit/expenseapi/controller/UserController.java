@@ -40,4 +40,10 @@ public class UserController {
     public User verifyUser(@PathVariable String email){
         return userRepository.findByEmail(email);
     }
+
+    @CrossOrigin
+    @GetMapping("/user/{email}")
+    public User getId(@PathVariable String email){
+        return userRepository.findByEmail(email);
+    }
 }

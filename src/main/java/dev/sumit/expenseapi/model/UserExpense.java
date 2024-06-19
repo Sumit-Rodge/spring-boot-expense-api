@@ -15,6 +15,7 @@ import java.util.Objects;
 @Data
 public class UserExpense {
 
+    public String email;
     public String id;
-    public List<Object> expenses;
+    public List<Expense> expenses;
 }

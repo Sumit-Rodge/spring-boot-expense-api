@@ -57,18 +57,6 @@ public class ExpenseController {
 
     }
 
-//    @CrossOrigin
-//    @PostMapping("/add/{id}")
-//    public ResponseEntity <String> addExpense(@RequestBody Expense expense,@PathVariable String id){
-//        try{
-//              System.out.println(userRepository.findById(id));
-//              return new ResponseEntity<>("hii",HttpStatus.OK);
-////            return new ResponseEntity<>(expenseRepository.save(expense),HttpStatus.CREATED);
-//        }catch(Exception e){
-//            return new ResponseEntity<>(null,HttpStatus.INTERNAL_SERVER_ERROR);
-//        }
-//
-//    }
 
 
     @CrossOrigin
